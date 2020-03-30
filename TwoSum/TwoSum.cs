@@ -17,56 +17,69 @@ public class Solution
     */
     public int[] TwoSum(int[] nums, int target)
     {
-        //// Brute Force approach O(2n)
-        //for (int i = 0; i < nums.Length; i++)
-        //{
-        //    if (nums[i] > target)
-        //    {
-        //        continue;
-        //    }
+        /*// Brute Force = O(n^2)
+        for (int i=0; i<nums.Length; i++) {
+            if (nums[i] > target) {
+                continue;
+            }
+            
+            for (int j=i+1; j<nums.Length; j++) {
+                if (nums[j] > target) {
+                    continue;
+                }
 
-        //    for (int j = i + 1; j < nums.Length; j++)
-        //    {
-        //        if (nums[j] > target)
-        //        {
-        //            continue;
-        //        }
-
-        //        if (nums[i] + nums[j] == target)
-        //        {
-        //            return new int[] { i, j };
-        //        }
-        //    }
-        //}
-        //return null;
+                if (nums[i]+nums[j] == target) {
+                    return new int[] {i,j};
+                }
+            }
+        }
+        return null;*/
 
 
-        // Less-than-half / greater-than-half approach
-        var numsLessThanHalf = new List<int>();
-        var numsGreaterThanHalf = new HashSet<int>();
-        foreach (int num in nums) // build 2 lists
+        // Less-than-half / greater-than-half approach = O(n + 0.5n + 1 + 1) = O(n)
+        // (half is out since can't use the same number twice)
+
+        // build 2 lists of values and their original indices since that's what needs to be returned
+        var numsLessThanHalf = new List<Pair>();
+        var numsGreaterThanHalf = new Dictionary<int,int>(); // maps Nums to their Index (the Num is the key, the Index is the associated data to be stored)
+        for (int i=0; i<nums.Length; i++) // O(n)
         {
-            if (num > target) // assuming no negatives (optimization of cutting down dataset)
+            if (nums[i] > target) // assuming no negatives (optimization of cutting down dataset)
                 continue;
             int half = target / 2;
-            if (target % 2 == 0 && num == half) // half of an even target is out since can't use the same number twice
+            if (target % 2 == 0 && nums[i] == half) // half of an even target is out since can't use the same number twice
                 continue;
-            if (num < half) // (optimization of splitting dataset)
+            if (nums[i] < half) // (optimization of splitting dataset)
             {
-                numsLessThanHalf.Add(num);
+                numsLessThanHalf.Add(new Pair(i, nums[i]));
                 // could check if solution is already in Hash and return early (could finish in O(0.5n))
             }
             else
-                numsGreaterThanHalf.Add(num);
+                numsGreaterThanHalf.Add(nums[i], i);
         }
-        foreach (int num in numsLessThanHalf) // O(n)
+
+        // loop numsLessThanHalf, find a partner in numsGreaterThanHalf
+        foreach (Pair pair in numsLessThanHalf) // O(0.5n) = O(n)
         {
-            int partner = target - num;
-            if (numsGreaterThanHalf.Contains(partner)) // O(1)
+            int partner = target - pair.val;
+            if (numsGreaterThanHalf.ContainsKey(partner)) // O(1)
             {
-                return new int[] { num, partner };
+                return new int[] { pair.i, numsGreaterThanHalf[partner]}; // O(1)
             }
         }
         return null;
     }
+
+    struct Pair
+    {
+        public int i;
+        public int val;
+
+        public Pair(int i, int val)
+        {
+            this.i = i;
+            this.val = val;
+        }
+    }
+
 }
