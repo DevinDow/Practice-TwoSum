@@ -17,23 +17,23 @@ public class Solution
     */
     public int[] TwoSum(int[] nums, int target)
     {
-        /*// Brute Force = O(n^2)
+        // Brute Force = O(n^2)
         for (int i=0; i<nums.Length; i++) {
-            if (nums[i] > target) {
-                continue;
-            }
+            //if (nums[i] > target) { // don't do this optimization, because it can include negative numbers
+            //    continue;
+            //}
             
             for (int j=i+1; j<nums.Length; j++) {
-                if (nums[j] > target) {
-                    continue;
-                }
+                //if (nums[j] > target) { // don't do this optimization, because it can include negative numbers
+                //    continue;
+                //}
 
                 if (nums[i]+nums[j] == target) {
                     return new int[] {i,j};
                 }
             }
         }
-        return null;*/
+        return null;
 
 
         // Less-than-half / greater-than-half approach = O(n + 0.5n + 1 + 1) = O(n)
@@ -44,8 +44,8 @@ public class Solution
         var numsGreaterThanHalf = new Dictionary<int,int>(); // maps Nums to their Index (the Num is the key, the Index is the associated data to be stored)
         for (int i=0; i<nums.Length; i++) // O(n)
         {
-            if (nums[i] > target) // assuming no negatives (optimization of cutting down dataset)
-                continue;
+            //if (nums[i] > target) // could optimize by cutting down dataset if there were no negative numbers
+            //    continue;
             int half = target / 2;
             if (target % 2 == 0 && nums[i] == half) // half of an even target is out since can't use the same number twice
                 continue;
