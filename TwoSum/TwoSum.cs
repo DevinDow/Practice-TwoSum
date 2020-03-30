@@ -17,7 +17,7 @@ public class Solution
     */
     public int[] TwoSum(int[] nums, int target)
     {
-        // Brute Force = O(n^2)
+        /*// Brute Force = O(n^2)
         for (int i=0; i<nums.Length; i++) {
             //if (nums[i] > target) { // don't do this optimization, because it can include negative numbers
             //    continue;
@@ -33,53 +33,57 @@ public class Solution
                 }
             }
         }
-        return null;
+        return null;*/
 
 
         // Less-than-half / greater-than-half approach = O(n + 0.5n + 1 + 1) = O(n)
-        // (half is out since can't use the same number twice)
 
-        // build 2 lists of values and their original indices since that's what needs to be returned
-        var numsLessThanHalf = new List<Pair>();
-        var numsGreaterThanHalf = new Dictionary<int,int>(); // maps Nums to their Index (the Num is the key, the Index is the associated data to be stored)
+        // build 2 dictionaries of values and their original indices since that's what needs to be returned
+        // dictionaries map Nums to their Index (the Num is the key, the Index is the associated data to be stored)
+        var numsLessThanHalf = new Dictionary<int, int>();
+        var numsGreaterThanEqualHalf = new Dictionary<int,int>();
         for (int i=0; i<nums.Length; i++) // O(n)
         {
-            //if (nums[i] > target) // could optimize by cutting down dataset if there were no negative numbers
+            //if (nums[i] > target) // could optimize by cutting down dataset if there were no negative nums
             //    continue;
             int half = target / 2;
-            if (target % 2 == 0 && nums[i] == half) // half of an even target is out since can't use the same number twice
+            if (target % 2 == 0 && nums[i] == half) // Special Case: half of an even target in the list twice (since can't reuse a num)
+            {
+                // if half already in Dictionary then success
+                if (numsGreaterThanEqualHalf.ContainsKey(half)) // O(1)
+                {
+                    return new int[] { i, numsGreaterThanEqualHalf[half] }; // O(1)
+                }
+                // otherwise add half to Dictionary
+                numsGreaterThanEqualHalf.Add(half, i);
                 continue;
+            }
             if (nums[i] < half) // (optimization of splitting dataset)
             {
-                numsLessThanHalf.Add(new Pair(i, nums[i]));
-                // could check if solution is already in Hash and return early (could finish in O(0.5n))
+                // skip duplicates
+                if (numsLessThanHalf.ContainsKey(nums[i])) // O(1)
+                    continue;
+                numsLessThanHalf.Add(nums[i], i); // O(1)
+                // TODO: could check if solution is already in Hash and return early (could finish in O(0.5n))
             }
             else
-                numsGreaterThanHalf.Add(nums[i], i);
+            {
+                // skip duplicates
+                if (numsGreaterThanEqualHalf.ContainsKey(nums[i])) // O(1)
+                    continue;
+                numsGreaterThanEqualHalf.Add(nums[i], i); // O(1)
+            }
         }
 
         // loop numsLessThanHalf, find a partner in numsGreaterThanHalf
-        foreach (Pair pair in numsLessThanHalf) // O(0.5n) = O(n)
+        foreach (int num in numsLessThanHalf.Keys) // O(0.5n) = O(n)
         {
-            int partner = target - pair.val;
-            if (numsGreaterThanHalf.ContainsKey(partner)) // O(1)
+            int partner = target - num;
+            if (numsGreaterThanEqualHalf.ContainsKey(partner)) // O(1)
             {
-                return new int[] { pair.i, numsGreaterThanHalf[partner]}; // O(1)
+                return new int[] { numsLessThanHalf[num], numsGreaterThanEqualHalf[partner]}; // O(1)
             }
         }
         return null;
     }
-
-    struct Pair
-    {
-        public int i;
-        public int val;
-
-        public Pair(int i, int val)
-        {
-            this.i = i;
-            this.val = val;
-        }
-    }
-
 }
